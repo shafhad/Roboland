@@ -1,5 +1,5 @@
 var robot, r1;
-var music, music2;
+var music;
 var sky, skyImage;
 var timer;
 var laser, laserA, laserI, laserS, laserI2, laser2, laserG, laserG2;
@@ -27,7 +27,8 @@ var health1, health2, health3, health4, healthAImage;
 var START = 1;
 var PLAY = 2;
 var END = 0;
-var OVER = 3;
+var ACCOMPLISHED = 3;
+var FAILED = 4;
 var gameState = START;
 var enemy, eb1;
 var score = 0;
@@ -68,6 +69,8 @@ var wall, wall2, wallImage;
 var finalBlast;
 var eg1, eg2, eg3, eg4, bg1, bg2, bg3, bg4, hg1, hg2, hg3, hg4, eh1, eh2, eh3, eh4;
 var wallG, wallG2;
+var htPlay, htPlay2, htPlayI, htPlayI2;
+var back, backI;
 
 
 function preload(){
@@ -94,13 +97,6 @@ function preload(){
     sparkS = loadSound("spark.mp3");
     
     music = loadSound("Undertale Asriel Dreemurr Theme.mp3");
-    
-    laserA = loadAnimation("lazer1-removebg-preview.png",
-    "lazer3-removebg-preview.png",
-    "lazer4-removebg-preview.png",
-    "lazer5-removebg-preview.png",
-    "lazer6-removebg-preview.png",
-    "lazer7-removebg-preview.png", )
 
     laserI = loadImage("lazer7-removebg-preview.png");
 
@@ -132,8 +128,6 @@ function preload(){
     batteryImage = loadImage("Battery.png");
 
     chargeS = loadSound("Power charge.mp3");
-
-    cImage = loadImage("c.png");
 
     robotIconImage = loadImage("frame_04_delay-0.03s-removebg-preview.png");
 
@@ -218,7 +212,6 @@ function preload(){
 
   dadMissileImage = loadImage("dadMissile.png");
 
-  music2 = loadSound("Undertale Asriel Dreemurr Theme 2.mp3");
 
   lowHealth = loadSound("low health.mp3");
 
@@ -249,6 +242,12 @@ function preload(){
  missionFailedI = loadImage("missionFailed.jpg");
 
  robolandI = loadImage("RL.png");
+
+ htPlayI = loadImage("htPlay2.png");
+
+ htPlayI2 = loadImage("htPlay.png");
+
+ backI = loadImage("Back.png");
 }
 
  
@@ -405,19 +404,19 @@ function setup(){
     dad.scale = 0.6;
     dad.setCollider("rectangle", -20, -80, 200, 250);
 
-enemyBoss = createSprite(1500, 400);
-enemyBoss.scale = 1.5;
-enemyBoss.addAnimation("enemy", eb1);
-enemyBoss.addAnimation("eb", eb);
-enemyBoss.addAnimation("enemy 2", eb2);
-enemyBoss.addAnimation("enemy 3", eb3);
+    enemyBoss = createSprite(1500, 400);
+    enemyBoss.scale = 1.5;
+    enemyBoss.addAnimation("enemy", eb1);
+    enemyBoss.addAnimation("eb", eb);
+    enemyBoss.addAnimation("enemy 2", eb2);
+    enemyBoss.addAnimation("enemy 3", eb3);
 
-enemyBoss.pause();
+    enemyBoss.pause();
 
 
-finalWall2 = createSprite(1500, 328);
-finalWall2.addImage("wall", wallImage);
-finalWall2.setCollider("rectangle", -75, 0, 125, 1000);
+    finalWall2 = createSprite(1500, 328);
+    finalWall2.addImage("wall", wallImage);
+    finalWall2.setCollider("rectangle", -75, 0, 125, 1000);
 
     robot.scale = 0.5;
 
@@ -454,7 +453,18 @@ finalWall2.setCollider("rectangle", -75, 0, 125, 1000);
     play.addImage("play", playI);
     play.scale = 0.4;
    
-    
+    htPlay = createSprite(-2000, 1250);
+    htPlay.addImage("how to play", htPlayI);
+    htPlay.scale = 1;
+
+    htPlay2 = createSprite(10000, 950);
+    htPlay2.addImage("how to play2", htPlayI2);
+    htPlay2.scale = 0.5;
+
+    back = createSprite(10000, 1285);
+    back.addImage("back", backI);
+    back.scale = 0.5;
+    back.setCollider("rectangle", 0, -20, 450, 100)
 
     ground = createSprite(652, 550, 1366, 5);
     ground.visible = false;
@@ -556,6 +566,21 @@ if(animation.x < -6000)
   enemyBall2.velocityX = -4;
   animation.destroy();
 }
+
+
+if(mouseIsOver(htPlay) && mouseWentDown("left"))
+    {
+      camera.x = 10000;
+       
+
+    }
+    
+
+       if(mouseIsOver(back) && mouseWentDown("left"))
+       {
+       camera.x = -2000;
+       }
+    
 
     if(mousePressedOver(play))
     {
@@ -1388,7 +1413,7 @@ if(rHealth.x === -180)
   batteryCircle.destroy();
   music.stop();
   camera.x = 11656;
-  gameState = OVER;
+ 
   
   
 }
@@ -1869,13 +1894,19 @@ if(dadMissileG2.isTouching(enemyBoss))
   enemyBossBlast2.x = enemyBoss.x;
   enemyBossBlast2.y = enemyBoss.y;
   dadMissileG2.destroyEach();
-  camera.x = -11656;
+  gameState = ACCOMPLISHED;
 
 }
 
+if(gameState === ACCOMPLISHED)
+{
+  camera.x = -11656;
+}
 
-
-
+if(gameStart === FAILED)
+{
+  camera.x = 11656;
+}
 
 if(dadMissileG.isTouching(enemyBoss))
 {
